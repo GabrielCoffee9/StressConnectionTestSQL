@@ -5,23 +5,25 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ZAbstractConnection,
-  ZConnection, generics.collections;
+  ZConnection, generics.collections, ShellApi;
 
 type
   TfrmPrincipal = class(TForm)
     ZConnectionO: TZConnection;
     btnConectar: TButton;
-    Label1: TLabel;
+    lblNumero: TLabel;
     edtNumeroDesejado: TEdit;
     lblDigitarNumero: TLabel;
     btnLiberarConexoes: TButton;
     procedure btnConectarClick(Sender: TObject);
     procedure btnLiberarConexoesClick(Sender: TObject);
+    procedure reiniciarAplicação;
   private
     { Private declarations }
   public
   procedure criarZconnection;
 end;
+
 
 var
   frmPrincipal: TfrmPrincipal;
@@ -38,7 +40,6 @@ implementation
 
 procedure TfrmPrincipal.btnConectarClick(Sender: TObject);
 begin
-
   if edtNumeroDesejado.Text = '' then
   begin
     ShowMessage ('É preciso colocar o numero de conexões!');
@@ -49,7 +50,7 @@ begin
     numeroDesejado      := edtNumeroDesejado.Text;
     for indice := 0 To numeroDesejado.ToInteger do
     begin
-      Label1.Caption := 'Numero de conexões feitas com sucesso: '+indice.ToString;
+      lblNumero.Caption := 'Numero de conexões feitas com sucesso: '+indice.ToString;
       criarZconnection;
      save := indice;
     end;
@@ -58,12 +59,17 @@ begin
 end;
 
 procedure TfrmPrincipal.btnLiberarConexoesClick(Sender: TObject);
+
 begin
+  reiniciarAplicação;
+end;
 
-  btnConectar.Enabled       := True;
-  btnLiberarConexoes.Enabled := False;
-
-
+procedure TfrmPrincipal.reiniciarAplicação;
+var nomeDoAplicativo : PChar;
+begin
+  nomeDoAplicativo := PChar(Application.ExeName);
+  ShellExecute(Handle,'open', nomeDoAplicativo, nil, nil, SW_SHOWNORMAL);
+  Application.Terminate;
 end;
 
 procedure TfrmPrincipal.criarZconnection;

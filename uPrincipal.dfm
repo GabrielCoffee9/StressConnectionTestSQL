@@ -1,9 +1,10 @@
 object frmPrincipal: TfrmPrincipal
   Left = 0
   Top = 0
-  Caption = 'frmPrincipal'
-  ClientHeight = 201
-  ClientWidth = 447
+  BorderStyle = bsSingle
+  Caption = 'Teste de conex'#227'o localhost'
+  ClientHeight = 211
+  ClientWidth = 457
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,9 +12,10 @@ object frmPrincipal: TfrmPrincipal
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object lblNumero: TLabel
     Left = 72
     Top = 133
     Width = 3
