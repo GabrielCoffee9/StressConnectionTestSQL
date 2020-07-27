@@ -9,6 +9,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  Application.Title := 'Testar conexões !';
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
   Application.Run;
 end.

@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ZAbstractConnection,
-  ZConnection, generics.collections, ShellApi;
+  ZConnection, generics.collections, ShellApi, IniFiles;
 
 type
   TfrmPrincipal = class(TForm)
@@ -18,6 +18,7 @@ type
     procedure btnConectarClick(Sender: TObject);
     procedure btnLiberarConexoesClick(Sender: TObject);
     procedure reiniciarAplicação;
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,9 +28,10 @@ end;
 
 var
   frmPrincipal: TfrmPrincipal;
-  numeroDesejado : string;
-  zconnection: TZConnection;
-  indice, save : integer;
+  numeroDesejado, vHostName, vDataBase, vUser, vPassword, vProtocol :string;
+  zconnection :TZConnection;
+  indice, save, vPort :integer;
+  arquivoIni : TIniFile;
 
 
 implementation
@@ -76,13 +78,41 @@ procedure TfrmPrincipal.criarZconnection;
 begin
 zconnection := TZConnection.Create(nil);
 
-zconnection.HostName := 'localhost';
-zconnection.Port     := 5432;
-zconnection.Database := 'db_sgc';
-zconnection.User     := 'postgres';
-zconnection.Password := 'info$g10112';
-zconnection.Protocol := 'postgresql';
+zconnection.HostName := vHostName;
+zconnection.Port     := vPort;
+zconnection.Database := vDataBase;
+zconnection.User     := vUser;
+zconnection.Password := vPassword;
+zconnection.Protocol := vProtocol;
 zconnection.Connect;
+end;
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+var
+  ArquivoIni: TIniFile;
+begin
+  if FileExists (ExtractFilePath(Application.ExeName) + 'Conectar.ini') then
+  begin
+    arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');
+    vHostName := arquivoIni.ReadString('Parametro 1', 'HostName', 'Erro ao ler o valor do Host');
+    vPort     := arquivoIni.ReadInteger('Parametro 2', 'Port', 0);
+    vDataBase := arquivoIni.ReadString('Parametro 3', 'DataBase', 'Erro ao ler o valor de DataBase');
+    vUser     := arquivoIni.ReadString('Parametro 4', 'User', 'Erro ao ler o valor de User');
+    vPassword := arquivoIni.ReadString('Parametro 5', 'Password', 'Erro ao ler o valor de Password');
+    vProtocol := arquivoIni.ReadString('Parametro 6', 'Protocol', 'Erro ao ler o valor de Protocol');
+  end
+  else
+  begin
+   arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');
+    arquivoIni.WriteString('Parametro 1', 'HostName', '');
+    arquivoIni.WriteInteger('Parametro 2', 'Port', 5432);
+    arquivoIni.WriteString('Parametro 3', 'DataBase', '');
+    arquivoIni.WriteString('Parametro 4', 'User', '');
+    arquivoIni.WriteString('Parametro 5', 'Password', '');
+    arquivoIni.WriteString('Parametro 6', 'Protocol', 'postgresql');
+    arquivoIni.Free;
+
+  end;
 end;
 
 end.
