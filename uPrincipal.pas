@@ -111,6 +111,10 @@ begin
     arquivoIni.WriteString('Parametro 5', 'Password', '');
     arquivoIni.WriteString('Parametro 6', 'Protocol', 'postgresql');
     arquivoIni.Free;
+    ShowMessage('Um arquivo de configuração ''Conectar.ini'' foi criado'+
+    ' na pasta onde se encontra o Executável deste progama.'
+    +' Certifique-se de alterar corretamente para que a conexão seja bem sucedida!');
+    Application.Terminate;
 
   end;
 end;
