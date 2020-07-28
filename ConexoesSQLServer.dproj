@@ -106,6 +106,8 @@
         <Icon_MainIcon>ConexoesSQLServer_Icon.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>Image\cloudnetwork_102150.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>Image\cloudnetwork_102150.png</UWP_DelphiLogo150>
+        <VerInfo_Build>2</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=G10SISTEMAS;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.2;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

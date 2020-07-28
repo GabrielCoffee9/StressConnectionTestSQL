@@ -42,22 +42,40 @@ implementation
 
 procedure TfrmPrincipal.btnConectarClick(Sender: TObject);
 begin
-  if edtNumeroDesejado.Text = '' then
-  begin
-    ShowMessage ('É preciso colocar o numero de conexões!');
-  end
+  if vHostName = '' then
+    ShowMessage('Parâmetro de hostname vazio! Verifique no arquivo de Configuração')
   else
-  begin
-    btnConectar.Enabled := False;
-    numeroDesejado      := edtNumeroDesejado.Text;
-    for indice := 0 To numeroDesejado.ToInteger do
-    begin
-      lblNumero.Caption := 'Numero de conexões feitas com sucesso: '+indice.ToString;
-      criarZconnection;
-     save := indice;
-    end;
-    btnLiberarConexoes.Enabled := True;
-  end;
+    if vDataBase = ''  then
+      ShowMessage ('Parâmetro de database vazio! Verifique no arquivo de Configuração')
+    else
+      if vUser = '' then
+        ShowMessage('Parâmetro de user vazio! Verifique no arquivo de Configuração')
+      else
+        if vPassword = '' then
+          ShowMessage('Parâmetro de password vazio! Verifique no arquivo de Configuração')
+        else
+          if vProtocol = '' then
+            ShowMessage('Parâmetro de protocol vazio! Verifique no arquivo de Configuração')
+          else
+            if VPort = 0 then
+            ShowMessage('Parâmetro de port vazio! Verifique no arquivo de Configuração')
+            else
+              if edtNumeroDesejado.Text = '' then
+                begin
+                  ShowMessage ('É preciso colocar o numero de conexões!');
+                end
+                else
+                begin
+                  btnConectar.Enabled := False;
+                  numeroDesejado      := edtNumeroDesejado.Text;
+                  for indice := 0 To numeroDesejado.ToInteger do
+                  begin
+                  lblNumero.Caption := 'Numero de conexões feitas com sucesso: '+indice.ToString;
+                  criarZconnection;
+                  save := indice;
+                end;
+                  btnLiberarConexoes.Enabled := True;
+                end;
 end;
 
 procedure TfrmPrincipal.btnLiberarConexoesClick(Sender: TObject);
@@ -94,28 +112,26 @@ begin
   if FileExists (ExtractFilePath(Application.ExeName) + 'Conectar.ini') then
   begin
     arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');
-    vHostName := arquivoIni.ReadString('Parametro 1', 'HostName', 'Erro ao ler o valor do Host');
-    vPort     := arquivoIni.ReadInteger('Parametro 2', 'Port', 0);
-    vDataBase := arquivoIni.ReadString('Parametro 3', 'DataBase', 'Erro ao ler o valor de DataBase');
-    vUser     := arquivoIni.ReadString('Parametro 4', 'User', 'Erro ao ler o valor de User');
-    vPassword := arquivoIni.ReadString('Parametro 5', 'Password', 'Erro ao ler o valor de Password');
-    vProtocol := arquivoIni.ReadString('Parametro 6', 'Protocol', 'Erro ao ler o valor de Protocol');
+    vHostName := arquivoIni.ReadString('Config Database', 'HostName', 'Erro ao ler o valor do Host');
+    vPort     := arquivoIni.ReadInteger('Config Database', 'Port', 0);
+    vDataBase := arquivoIni.ReadString('Config Database', 'DataBase', 'Erro ao ler o valor de DataBase');
+    vUser     := arquivoIni.ReadString('Config Database', 'User', 'Erro ao ler o valor de User');
+    vPassword := arquivoIni.ReadString('Config Database', 'Password', 'Erro ao ler o valor de Password');
+    vProtocol := arquivoIni.ReadString('Config Database', 'Protocol', 'Erro ao ler o valor de Protocol');
   end
   else
   begin
    arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');
-    arquivoIni.WriteString('Parametro 1', 'HostName', '');
-    arquivoIni.WriteInteger('Parametro 2', 'Port', 5432);
-    arquivoIni.WriteString('Parametro 3', 'DataBase', '');
-    arquivoIni.WriteString('Parametro 4', 'User', '');
-    arquivoIni.WriteString('Parametro 5', 'Password', '');
-    arquivoIni.WriteString('Parametro 6', 'Protocol', 'postgresql');
+    arquivoIni.WriteString('Config Database', 'HostName', '');
+    arquivoIni.WriteInteger('Config Database', 'Port', 5432);
+    arquivoIni.WriteString('Config Database', 'DataBase', '');
+    arquivoIni.WriteString('Config Database', 'User', '');
+    arquivoIni.WriteString('Config Database', 'Password', '');
+    arquivoIni.WriteString('Config Database', 'Protocol', 'postgresql');
     arquivoIni.Free;
     ShowMessage('Um arquivo de configuração ''Conectar.ini'' foi criado'+
     ' na pasta onde se encontra o Executável deste progama.'
     +' Certifique-se de alterar corretamente para que a conexão seja bem sucedida!');
-    Application.Terminate;
-
   end;
 end;
 
