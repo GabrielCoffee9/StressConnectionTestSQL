@@ -70,6 +70,7 @@ begin
                   numeroDesejado      := edtNumeroDesejado.Text;
                   for indice := 0 To numeroDesejado.ToInteger do
                   begin
+                  Application.ProcessMessages;
                   lblNumero.Caption := 'Numero de conexões feitas com sucesso: '+indice.ToString;
                   criarZconnection;
                   save := indice;
