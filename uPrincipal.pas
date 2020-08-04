@@ -128,6 +128,7 @@ procedure TfrmPrincipal.FormCreate(Sender: TObject);
 var
   ArquivoIni: TIniFile;
 begin
+  edtNumeroDesejado.MaxLength := 4;
   if not FileExists (ExtractFilePath(Application.ExeName) + 'Conectar.ini') then
   begin
     arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');

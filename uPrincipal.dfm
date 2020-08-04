@@ -2172,6 +2172,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 40
     Width = 121
     Height = 21
+    NumbersOnly = True
     TabOrder = 1
   end
   object btnLiberarConexoes: TButton
