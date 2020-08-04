@@ -22,7 +22,7 @@ type
   private
     { Private declarations }
   public
-  procedure criarZconnection;
+  function criarZconnection : boolean;
 end;
 
 
@@ -42,41 +42,47 @@ implementation
 
 procedure TfrmPrincipal.btnConectarClick(Sender: TObject);
 begin
-  if vHostName = '' then
-    ShowMessage('Parâmetro de hostname vazio! Verifique no arquivo de Configuração')
+  if FileExists (ExtractFilePath(Application.ExeName) + 'Conectar.ini') then
+  begin
+    arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');
+    vHostName  := arquivoIni.ReadString('Config Database', 'HostName', 'Erro ao ler o valor do Host');
+    vPort      := arquivoIni.ReadInteger('Config Database', 'Port', 0);
+    vDataBase  := arquivoIni.ReadString('Config Database', 'DataBase', 'Erro ao ler o valor de DataBase');
+    vUser      := arquivoIni.ReadString('Config Database', 'User', 'Erro ao ler o valor de User');
+    vPassword  := arquivoIni.ReadString('Config Database', 'Password', 'Erro ao ler o valor de Password');
+    vProtocol  := arquivoIni.ReadString('Config Database', 'Protocol', 'Erro ao ler o valor de Protocol');
+  end;
+
+  if (vHostName = '') or (vPassword = '')or (vDataBase = '') or (vUser = '') or (vProtocol = '') then
+    ShowMessage('Algum Parâmetro vazio! Verifique no arquivo de Configuração')
   else
-    if vDataBase = ''  then
-      ShowMessage ('Parâmetro de database vazio! Verifique no arquivo de Configuração')
+    if Vport= 0 then
+    begin
+      ShowMessage('Algum Parâmetro vazio! Verifique no arquivo de Configuração');
+    end
     else
-      if vUser = '' then
-        ShowMessage('Parâmetro de user vazio! Verifique no arquivo de Configuração')
-      else
-        if vPassword = '' then
-          ShowMessage('Parâmetro de password vazio! Verifique no arquivo de Configuração')
-        else
-          if vProtocol = '' then
-            ShowMessage('Parâmetro de protocol vazio! Verifique no arquivo de Configuração')
-          else
-            if VPort = 0 then
-            ShowMessage('Parâmetro de port vazio! Verifique no arquivo de Configuração')
-            else
-              if edtNumeroDesejado.Text = '' then
-                begin
-                  ShowMessage ('É preciso colocar o numero de conexões!');
-                end
-                else
-                begin
-                  btnConectar.Enabled := False;
-                  numeroDesejado      := edtNumeroDesejado.Text;
-                  for indice := 0 To numeroDesejado.ToInteger do
-                  begin
-                  Application.ProcessMessages;
-                  lblNumero.Caption := 'Numero de conexões feitas com sucesso: '+indice.ToString;
-                  criarZconnection;
-                  save := indice;
-                end;
-                  btnLiberarConexoes.Enabled := True;
-                end;
+    if edtNumeroDesejado.Text = '' then
+    begin
+      ShowMessage ('É preciso colocar o numero de conexões!');
+    end
+    else
+    if criarZconnection = True then
+    begin
+      btnConectar.Enabled := False;
+      numeroDesejado      := edtNumeroDesejado.Text;
+      for indice := 0 To numeroDesejado.ToInteger do
+      begin
+        Application.ProcessMessages;
+        lblNumero.Caption := 'Numero de conexões feitas com sucesso: '+indice.ToString;
+        criarZconnection;
+        save := indice;
+      end;
+      btnLiberarConexoes.Enabled := True;
+    end
+    else
+    begin
+      btnConectar.Enabled := True;
+    end;
 end;
 
 procedure TfrmPrincipal.btnLiberarConexoesClick(Sender: TObject);
@@ -93,36 +99,38 @@ begin
   Application.Terminate;
 end;
 
-procedure TfrmPrincipal.criarZconnection;
+function TfrmPrincipal.criarZconnection: boolean;
 begin
-zconnection := TZConnection.Create(nil);
-
-zconnection.HostName := vHostName;
-zconnection.Port     := vPort;
-zconnection.Database := vDataBase;
-zconnection.User     := vUser;
-zconnection.Password := vPassword;
-zconnection.Protocol := vProtocol;
-zconnection.Connect;
+  zconnection := TZConnection.Create(nil);
+  try
+    zconnection.HostName := vHostName;
+    zconnection.Port     := vPort;
+    zconnection.Database := vDataBase;
+    zconnection.User     := vUser;
+    zconnection.Password := vPassword;
+    zconnection.Protocol := vProtocol;
+    zconnection.Connect;
+    Result               := True;
+  except
+  with CreateMessageDialog('Conexão SQL não foi bem sucedida,'+
+    'verifique o arquivo ini novamente.', mtInformation, [mbOk]) do
+    try
+      Caption := 'Erro';
+      ShowModal;
+    finally
+      Free
+    end;
+    Result := False;
+  end;
 end;
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 var
   ArquivoIni: TIniFile;
 begin
-  if FileExists (ExtractFilePath(Application.ExeName) + 'Conectar.ini') then
+  if not FileExists (ExtractFilePath(Application.ExeName) + 'Conectar.ini') then
   begin
     arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');
-    vHostName := arquivoIni.ReadString('Config Database', 'HostName', 'Erro ao ler o valor do Host');
-    vPort     := arquivoIni.ReadInteger('Config Database', 'Port', 0);
-    vDataBase := arquivoIni.ReadString('Config Database', 'DataBase', 'Erro ao ler o valor de DataBase');
-    vUser     := arquivoIni.ReadString('Config Database', 'User', 'Erro ao ler o valor de User');
-    vPassword := arquivoIni.ReadString('Config Database', 'Password', 'Erro ao ler o valor de Password');
-    vProtocol := arquivoIni.ReadString('Config Database', 'Protocol', 'Erro ao ler o valor de Protocol');
-  end
-  else
-  begin
-   arquivoIni := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Conectar.ini');
     arquivoIni.WriteString('Config Database', 'HostName', '');
     arquivoIni.WriteInteger('Config Database', 'Port', 5432);
     arquivoIni.WriteString('Config Database', 'DataBase', '');
